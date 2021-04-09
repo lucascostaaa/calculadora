@@ -52,10 +52,12 @@ namespace Calculadora.ConsoleApp
 
                 if (EhOpcaoInvalida(opcao)) //AND 
                 {
-                    MostrarMenssagem();
+                    string menssagemDeErro = "Opção inválida! Tente novamente";
+                    MostrarMenssagem(menssagemDeErro); 
 
                     continue;
                 }
+
                 if (opcao == EhOpcaoVizualizacao())
                 {
                     Console.WriteLine();
@@ -63,83 +65,57 @@ namespace Calculadora.ConsoleApp
                     if (contadorOperacoesRealizadas == 0)
 
                     {
-                        NenhumaOpcaoRealizada();
+                        string nenhumaOpcao = "Nenhuma operação fui realizada!";
+                        NenhumaOpcaoRealizada(nenhumaOpcao);
                     }
                     else
-                    {
+                   
                         OpcoesRealizadas(operacoesRealizadas);
-                    }
+                   
 
 
                     Console.ReadLine();
                     Console.Clear();
 
+                    continue;
+
                 }
 
 
                 if (OpcaoSair(opcao))
-                {
                     break;
-                }
+                
 
                 double primeiroNumero, segundoNumero;
 
-                Console.Write("Digite o primeiro número: ");
-                primeiroNumero = Convert.ToDouble(Console.ReadLine());
+                primeiroNumero = ObterNumero("primeiro");
 
                 do
                 {
-                    Console.Write("Digite o segundo número: ");
-                    segundoNumero = Convert.ToDouble(Console.ReadLine());
+                    segundoNumero = ObterNumero("segundo");
 
-                    if (opcao == "4" && segundoNumero == 0)
+                    if (SegundoNumeroInvalido(opcao, segundoNumero))
                     {
-                        Console.ForegroundColor = ConsoleColor.Red;
-
-                        Console.WriteLine("Segundo número inválido! Tente novamente");
-
-                        Console.ResetColor();
-
-                        Console.ReadLine();
+                        MostrarMenssagem("Segundo número inválido! Tente novamente");
                     }
 
-                } while (opcao == "4" && segundoNumero == 0);
+                } while (SegundoNumeroInvalido(opcao, segundoNumero));
 
-                double resultado = 0;
+                double resultado = CalcularResultado(opcao, primeiroNumero, segundoNumero);
 
-                string simboloOperacao = "";
+   
 
-                switch (opcao)
-                {
-                    case "1":
-                        resultado = primeiroNumero + segundoNumero;
-                        simboloOperacao = "+";
-                        break;
+                
 
-                    case "2":
-                        resultado = primeiroNumero - segundoNumero;
-                        simboloOperacao = "-";
-                        break;
+                      //SEM CONCATENAR 
+                //string operacaoRealizada =
+                    //primeiroNumero.ToString() + " " + simboloOperacao + " " +
+                    //segundoNumero.ToString() + " = " + resultado.ToString();
 
-                    case "3":
-                        resultado = primeiroNumero * segundoNumero;
-                        simboloOperacao = "*";
-                        break;
+                    // CONCATENANDO
 
-                    case "4":
-                        resultado = primeiroNumero / segundoNumero;
-                        simboloOperacao = "/";
-                        break;
-
-
-
-                    default:
-                        break;
-                }
-
-                string operacaoRealizada =
-                    primeiroNumero.ToString() + " " + simboloOperacao + " " +
-                    segundoNumero.ToString() + " = " + resultado.ToString();
+                    // O OBTERSIMBOLO FOI CONCATENADA DENTRO DA OPERAÇAOREALIZADA
+                string operacaoRealizada = $"{primeiroNumero} {ObterSimbolo(opcao)} {segundoNumero} = {resultado} ";
 
 
                 operacoesRealizadas[contadorOperacoesRealizadas] = operacaoRealizada;
@@ -156,6 +132,75 @@ namespace Calculadora.ConsoleApp
 
             }
         }
+        private static string ObterSimbolo(string opcao)
+        {
+            string simboloOperacao = "";
+
+            switch (opcao)
+            {
+                case "1": simboloOperacao = "+"; break;
+
+                case "2":simboloOperacao = "-"; break;
+
+                case "3":simboloOperacao = "*"; break;
+
+                case "4":simboloOperacao = "/"; break;
+                    
+                default:
+                    break;
+            }
+            return simboloOperacao;
+        }
+
+        private static double CalcularResultado(string opcao, double primeiroNumero, double segundoNumero)
+        {
+            double resultado = 0;
+
+            switch (opcao)
+            {
+                case "1":
+                    resultado = primeiroNumero + segundoNumero;
+               
+                    break;
+
+                case "2":
+                    resultado = primeiroNumero - segundoNumero;
+                    
+                    break;
+
+                case "3":
+                    resultado = primeiroNumero * segundoNumero;
+                    
+                    break;
+
+                case "4":
+                    resultado = primeiroNumero / segundoNumero;
+                    
+                    break;
+
+
+
+                default:
+                    break;
+            }
+            return resultado;
+        }
+
+        private static bool SegundoNumeroInvalido(string opcao, double segundoNumero)
+        {
+            return opcao == "4" && segundoNumero == 0;
+        }
+
+        private static double ObterNumero(string ordem) 
+        {
+            //INTERPOLAÇÃO / CONCATENAÇÃO MAIS CHIQUE
+            Console.Write($"Digite o {ordem} numero: ");
+
+            double numero = Convert.ToDouble( Console.ReadLine());
+
+            return numero;
+        }
+
 
         private static bool OpcaoSair(string opcao)
         {
@@ -171,11 +216,11 @@ namespace Calculadora.ConsoleApp
             }
         }
 
-        private static void NenhumaOpcaoRealizada()
+        private static void NenhumaOpcaoRealizada(string nenhumaOpcao)
         {
             Console.ForegroundColor = ConsoleColor.Red;
 
-            Console.WriteLine("Nenhuma operação fui realizada!");
+            Console.WriteLine(nenhumaOpcao);
 
             Console.ResetColor();
         }
@@ -185,11 +230,13 @@ namespace Calculadora.ConsoleApp
             return "5";
         }
 
-        private static void MostrarMenssagem()
+        private static void MostrarMenssagem(string mensagem)
         {
+
+
             Console.ForegroundColor = ConsoleColor.Red;
 
-            Console.WriteLine("Opção inválida! Tente novamente");
+            Console.WriteLine(mensagem);
 
             Console.ResetColor();
 
